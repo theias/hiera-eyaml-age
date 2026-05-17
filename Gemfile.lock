@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     hiera-eyaml-age (0.1.0)
-      hiera-eyaml (>= 5.0.0)
+      hiera-eyaml (~> 5.0)
 
 GEM
   remote: https://rubygems.org/

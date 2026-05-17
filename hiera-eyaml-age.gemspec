@@ -19,5 +19,6 @@ Gem::Specification.new do |gem|
   gem.files         = `git ls-files`.split($INPUT_RECORD_SEPARATOR)
   gem.require_paths = ['lib']
 
-  gem.add_dependency('hiera-eyaml', '>=5.0.0')
+  gem.required_ruby_version = '>= 3.0'
+  gem.add_dependency('hiera-eyaml', '~> 5.0')
 end
