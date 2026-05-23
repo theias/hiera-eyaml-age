@@ -61,6 +61,10 @@ age recipients can be native age public keys (`age1...`) or SSH public keys (`ss
 
 Use `eyaml --help` for more, or see the [hiera-eyaml] docs.
 
+## Hardware keys and PKCS#11 tokens
+
+If your age identity is protected by another factor (e.g. encrypted with a password, or an identity stored on a hardware security key) be aware that `hiera-eyaml` calls the encryptor once per encrypted value per file. Each call spawns a separate `age` process, which means one hardware interaction per encrypted value. This is a limitation of `hiera-eyaml`'s design, not of `age`.
+
 ### Configuring hiera
 
 ```yaml
