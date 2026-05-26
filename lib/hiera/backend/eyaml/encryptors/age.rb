@@ -61,7 +61,9 @@ class Hiera
                 binmode: true
               )
             unless status.success?
-              raise RecoverableError, "age encrypt failed: #{stderr.strip}"
+              warn("age encrypt failed (run with --trace for details, including errors from age which may be sensitive)")
+              debug("age encrypt stderr: #{stderr.strip}")
+              raise RecoverableError, "age encrypt failed"
             end
 
             stdout
@@ -89,9 +91,6 @@ class Hiera
               if identity_file.nil? || identity_file.empty?
                 raise ArgumentError,
                       "No age identity file configured, check age_identity_file configuration value is correct"
-              elsif !File.exist?(identity_file)
-                raise ArgumentError,
-                      "Configured age identity file #{identity_file} doesn't exist, check age_identity_file configuration value is correct"
               end
 
               identity_arg = identity_file
@@ -112,10 +111,9 @@ class Hiera
             r_fd&.close
 
             unless status.success?
-              warn(
-                "Fatal: Failed to decrypt ciphertext (check settings and that you are a recipient)"
-              )
-              raise StandardError, "age decrypt failed: #{stderr.strip}"
+              warn("age decrypt failed (run with --trace for details, including errors from age which may be sensitive)")
+              debug("age decrypt stderr: #{stderr.strip}")
+              raise StandardError, "age decrypt failed"
             end
 
             stdout
