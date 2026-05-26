@@ -14,7 +14,7 @@ class Hiera
 
           self.options = {
             age_binary_path: {
-              desc: "Full path to the age executable",
+              desc: "Full path to the age executable (use an absolute path in production to avoid PATH-based substitution)",
               type: :string,
               default: "age"
             },
