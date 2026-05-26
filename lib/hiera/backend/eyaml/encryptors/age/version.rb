@@ -3,7 +3,7 @@ class Hiera
     module Eyaml
       module Encryptors
         module AgeVersion
-          VERSION = "0.1.0".freeze
+          VERSION = "0.2.0".freeze
         end
       end
     end
