@@ -22,12 +22,20 @@ class Hiera
               desc: "Path to age identity file for decryption",
               type: :string
             },
+            identity_env_var: {
+              desc: "Name of environment variable containing age identity for decryption",
+              type: :string
+            },
             recipients: {
               desc: "List of recipients (comma separated)",
               type: :string
             },
             recipients_file: {
               desc: "File containing a list of recipients (one on each line)",
+              type: :string
+            },
+            recipients_env_var: {
+              desc: "Name of environment variable containing age recipients (comma separated)",
               type: :string
             }
           }
@@ -60,15 +68,34 @@ class Hiera
           end
 
           def self.decrypt(ciphertext)
-            identity_file = option(:identity_file)
-            debug("age identity file is #{identity_file}")
+            env_var = option(:identity_env_var)
 
-            if identity_file.nil? || identity_file.empty?
-              raise ArgumentError,
-                    "No age identity file configured, check age_identity_file configuration value is correct"
-            elsif !File.exist?(identity_file)
-              raise ArgumentError,
-                    "Configured age identity file #{identity_file} doesn't exist, check age_identity_file configuration value is correct"
+            if env_var
+              raise ArgumentError, "env #{env_var} is not set" unless ENV[env_var]
+
+              # Pass the identity via a pipe rather than a temp file so the key
+              # material never touches disk. age's --identity accepts /dev/fd/N.
+              # Ruby 2.0+ opens FDs with O_CLOEXEC by default, so we must
+              # explicitly preserve the read end across the exec boundary.
+              r_fd, w_fd = IO.pipe
+              w_fd.write(ENV[env_var])
+              w_fd.close
+              identity_arg = "/dev/fd/#{r_fd.fileno}"
+              extra_opts = { r_fd.fileno => r_fd }
+            else
+              identity_file = option(:identity_file)
+              debug("age identity file is #{identity_file}")
+
+              if identity_file.nil? || identity_file.empty?
+                raise ArgumentError,
+                      "No age identity file configured, check age_identity_file configuration value is correct"
+              elsif !File.exist?(identity_file)
+                raise ArgumentError,
+                      "Configured age identity file #{identity_file} doesn't exist, check age_identity_file configuration value is correct"
+              end
+
+              identity_arg = identity_file
+              extra_opts = {}
             end
 
             stdout, stderr, status =
@@ -76,10 +103,13 @@ class Hiera
                 option(:age_binary_path),
                 "--decrypt",
                 "--identity",
-                identity_file,
+                identity_arg,
                 stdin_data: ciphertext,
-                binmode: true
+                binmode: true,
+                **extra_opts
               )
+
+            r_fd&.close
 
             unless status.success?
               warn(
@@ -99,6 +129,14 @@ class Hiera
             private
 
             def determine_recipients
+              env_var = option(:recipients_env_var)
+              if env_var
+                raise ArgumentError, "env #{env_var} is not set" unless ENV[env_var]
+
+                debug("Using --recipients-env-var option")
+                return ENV[env_var].split(",").map(&:strip)
+              end
+
               recipient_option = option :recipients
 
               unless recipient_option.nil?
