@@ -20,5 +20,5 @@ Gem::Specification.new do |gem|
   gem.require_paths = ['lib']
 
   gem.required_ruby_version = '>= 3.0'
-  gem.add_dependency('hiera-eyaml', '~> 5.0')
+  gem.add_dependency('hiera-eyaml', '~> 4.2.0')
 end

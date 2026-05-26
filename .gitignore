@@ -1,4 +1,11 @@
 *.gem
 *.swp
 .bundle/
+gem2deb*
+gem2deb*/
+hiera-eyaml-age-*
+hiera-eyaml-age-*/
+hiera-eyaml-age_*
+hiera-eyaml-age_*/
+ruby
 vendor/
