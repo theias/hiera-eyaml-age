@@ -10,8 +10,11 @@ gem: hiera-eyaml-age-$(VERSION).gem
 deb: hiera-eyaml-age-$(VERSION).gem
 	gem2deb --package hiera-eyaml-age hiera-eyaml-age-$(VERSION).gem
 
+targz:
+	git archive --output hiera-eyaml-age_$(VERSION).tar.gz --prefix hiera-eyaml-age main
+
 .PHONY: packages
-packages: deb gem
+packages: deb gem targz
 
 hiera-eyaml-age-$(VERSION).gem:
 	gem build hiera-eyaml-age.gemspec
