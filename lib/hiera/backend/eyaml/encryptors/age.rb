@@ -40,6 +40,10 @@ class Hiera
             }
           }
 
+          def self.option(name)
+            super || (self.options[name] || {})[:default]
+          end
+
           def self.encrypt(plaintext)
             recipients = determine_recipients
             debug("Recipients are #{recipients}")
