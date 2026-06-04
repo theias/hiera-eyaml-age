@@ -75,11 +75,13 @@ hierarchy:
   - name: "Per-node data"
     lookup_key: eyaml_lookup_key
     options:
+      age_binary_path: /path/to/age
       age_identity_file: /opt/puppetlabs/server/data/puppetserver/.age/identity.txt
     path: "nodes/%{::trusted.certname}.yaml"
   - name: "Common data"
     lookup_key: eyaml_lookup_key
     options:
+      age_binary_path: /path/to/age
       age_identity_file: /opt/puppetlabs/server/data/puppetserver/.age/identity.txt
     path: "common.yaml"
 ```

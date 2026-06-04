@@ -13,7 +13,7 @@ class Hiera
           self.tag = "AGE"
 
           self.options = {
-            age_binary_path: {
+            binary_path: {
               desc: "Full path to the age executable (use an absolute path in production to avoid PATH-based substitution)",
               type: :string,
               default: "age"
@@ -54,7 +54,7 @@ class Hiera
 
             stdout, stderr, status =
               Open3.capture3(
-                option(:age_binary_path),
+                option(:binary_path),
                 "--encrypt",
                 *recipient_args,
                 stdin_data: plaintext,
@@ -99,7 +99,7 @@ class Hiera
 
             stdout, stderr, status =
               Open3.capture3(
-                option(:age_binary_path),
+                option(:binary_path),
                 "--decrypt",
                 "--identity",
                 identity_arg,
